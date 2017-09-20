@@ -1,3 +1,5 @@
 main
 go-xymon-remotemonitor
+remotemonitor
+remotemonitor-*.tar.xz
 *~

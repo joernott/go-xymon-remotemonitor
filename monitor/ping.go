@@ -48,12 +48,12 @@ func (m Monitor) PingCheck(dryrun bool, logger *log.Entry) error {
 			strconv.FormatFloat(float64(stats.MinRtt.Nanoseconds())/1000, 'f', 5, 64),
 			strconv.FormatFloat(float64(stats.AvgRtt.Nanoseconds())/1000, 'f', 5, 64),
 			strconv.FormatFloat(float64(stats.MaxRtt.Nanoseconds())/1000, 'f', 5, 64),
-			strconv.FormatFloat(stats.PacketLoss, 'f', 3, 64))
+			strconv.FormatFloat(stats.PacketLoss*-1, 'f', 3, 64))
 		f := log.Fields{
 			"Min":  stats.MinRtt,
 			"Avg":  stats.AvgRtt,
 			"Max":  stats.MaxRtt,
-			"Loss": stats.PacketLoss,
+			"Loss": stats.PacketLoss * -1,
 		}
 		logger.WithFields(f).Info("Ping")
 		if !dryrun {
