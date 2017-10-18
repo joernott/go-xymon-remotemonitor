@@ -15,10 +15,12 @@ package monitor
 
 import (
 	"fmt"
+	"io"
+	"math"
 	"strconv"
-
+	"time"
 	log "github.com/sirupsen/logrus"
-	"github.com/sparrc/go-ping"
+	"github.com/webfrank/go-ping"
 )
 
 func (m Monitor) PingCheck(dryrun bool, logger *log.Entry) error {
@@ -38,8 +40,10 @@ func (m Monitor) PingCheck(dryrun bool, logger *log.Entry) error {
 		pinger.SetPrivileged(true)
 		pinger.Count = m.Ping.Count
 		pinger.Run()
+		time.Sleep(time.Second)	
 		stats := pinger.Statistics()
-		if stats.PacketLoss > 0 {
+		pl:= math.Abs(stats.PacketLoss)
+		if pl > 0 {
 			status = StatusRed
 		} else {
 			status = StatusGreen
@@ -48,17 +52,19 @@ func (m Monitor) PingCheck(dryrun bool, logger *log.Entry) error {
 			strconv.FormatFloat(float64(stats.MinRtt.Nanoseconds())/1000, 'f', 5, 64),
 			strconv.FormatFloat(float64(stats.AvgRtt.Nanoseconds())/1000, 'f', 5, 64),
 			strconv.FormatFloat(float64(stats.MaxRtt.Nanoseconds())/1000, 'f', 5, 64),
-			strconv.FormatFloat(stats.PacketLoss*-1, 'f', 3, 64))
+			strconv.FormatFloat(pl, 'f', 3, 64))
 		f := log.Fields{
 			"Min":  stats.MinRtt,
 			"Avg":  stats.AvgRtt,
 			"Max":  stats.MaxRtt,
-			"Loss": stats.PacketLoss * -1,
+			"Loss": pl,
 		}
 		logger.WithFields(f).Info("Ping")
 		if !dryrun {
 			err = m.controller.Message(status, m.Machine, m.Ping.Column, msg)
-			return err
+			if err != io.EOF {
+				return err
+			}
 		}
 	}
 	return nil
