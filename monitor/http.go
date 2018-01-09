@@ -70,6 +70,9 @@ func (m Monitor) HttpCheck(dryrun bool, logger *log.Entry) (int64, int64, error)
 				m.err = err
 				Bad++
 			} else {
+				if h.User != "" {
+					req.SetBasicAuth(h.User, h.Password)
+				}
 				req.Host = h.Hostname
 				//req.Header.Set("Host", h.Hostname)
 				start := time.Now()
@@ -81,7 +84,7 @@ func (m Monitor) HttpCheck(dryrun bool, logger *log.Entry) (int64, int64, error)
 					m.err = err
 					Bad++
 				} else {
-					if response.StatusCode > 399 {
+					if (response.StatusCode > 399) && (response.StatusCode != http.StatusUnauthorized) {
 						logger.WithFields(log.Fields{"URL": u, "Response": response.StatusCode}).Info("Invalid HTTP response")
 						Result = StatusRed
 						Bad++

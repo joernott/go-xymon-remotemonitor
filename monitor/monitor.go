@@ -42,6 +42,8 @@ type HttpMonitor struct {
 	Port     int      `json:"Port" yaml:"Port"`
 	Path     []string `json:"Path" yaml:"Path"`
 	Column   string   `json:"Column" yaml:"Column"`
+	User     string   `json:"User" yaml:"User"`
+	Password string   `json:"Password" yaml:"Password"`
 }
 
 type MailUser struct {
@@ -84,6 +86,7 @@ type Controller struct {
 	XymonTimeout time.Duration
 	monitors     MonitorList
 	wait         sync.WaitGroup
+	pingmutex    sync.Mutex
 }
 
 type Status int

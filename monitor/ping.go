@@ -19,6 +19,7 @@ import (
 	"math"
 	"strconv"
 	"time"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/webfrank/go-ping"
 )
@@ -39,10 +40,12 @@ func (m Monitor) PingCheck(dryrun bool, logger *log.Entry) error {
 	} else {
 		pinger.SetPrivileged(true)
 		pinger.Count = m.Ping.Count
+		m.controller.pingmutex.Lock()
 		pinger.Run()
-		time.Sleep(time.Second)	
+		time.Sleep(time.Second)
 		stats := pinger.Statistics()
-		pl:= math.Abs(stats.PacketLoss)
+		m.controller.pingmutex.Unlock()
+		pl := math.Abs(stats.PacketLoss)
 		if pl > 0 {
 			status = StatusRed
 		} else {
