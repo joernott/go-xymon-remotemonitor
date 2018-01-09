@@ -53,6 +53,8 @@ A monitor definition is saved in the *hostdir* with a file suffix of
       "Https": false,
       "Hostname": "www.example.com",
       "Port": 80,
+      "User": "Administrator",
+      "Password": "123456",
       "Path": ["/favicon.ico", "/index.html"],
       "Column": "remote_http"
     },
@@ -60,6 +62,8 @@ A monitor definition is saved in the *hostdir* with a file suffix of
       "Https": true,
       "Hostname": "www.example.com",
       "Port": 443,
+      "User": "Administrator",
+      "Password": "123456"
       "Path": ["/favicon.ico", "/index.html", "/login.php"],
       "Column": "remote_http"
     }
@@ -95,7 +99,9 @@ column for this check in Xymons hosts.cfg.
 http or https in one single check. *Https* defines whether you want a http or 
 https connection (default false), *Hostname* is used to set the hostname in the
 connection (It is made using the IP in the URL) and *Port* defines the port to
-connect to. *Path* is an array of paths on the web server (must start with a /).
+connect to. If you need to authenticate witrh Http Basic Auth, you can supply
+*Username* and *Password* for that. Leaving them empty will skip authentication.
+*Path* is an array of paths on the web server (must start with a /).
 Every path check must succeed for the test to be green. This allows checking for
 multiple files on a web server. *Column* defines the column in Xymons hosts.cfg.
 
